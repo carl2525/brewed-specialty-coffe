@@ -1,5 +1,6 @@
 # brewed-specialty-coffe
-A Web based Online Ordering System for Brewed Specialty Coffee
+A Web based Online Ordering System for Brewed Specialty Coffee<br>
+Role: Freelance Web Developer.
 
 
 Programming Languages Used: <br>
