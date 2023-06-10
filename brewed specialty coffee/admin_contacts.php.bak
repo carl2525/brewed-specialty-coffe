@@ -1,0 +1,170 @@
+<?php
+
+include 'config.php';
+
+session_start();
+
+$admin_id = $_SESSION['admin_id'];
+
+if(!isset($admin_id)){
+   header('location:login.php');
+};
+
+if(isset($_GET['delete'])){
+   $delete_id = $_GET['delete'];
+   mysqli_query($conn, "DELETE FROM `message` WHERE id = '$delete_id'") or die('query failed');
+   header('location:admin_contacts.php');
+}
+
+if(isset($_POST['send'])){
+
+
+$id = mysqli_real_escape_string($conn, $_SESSION['user_id']);
+$feed = mysqli_real_escape_string($conn, $_POST['feedback']);
+
+$name = mysqli_real_escape_string($conn,$_SESSION['user_name']);
+$email = mysqli_real_escape_string($conn, $_SESSION['user_email']);
+   
+
+   $select_feedback = mysqli_query($conn, "SELECT * FROM `message` WHERE name = '$name' AND email = '$email' AND feedback= '$feed'") or die('query failed');
+
+   if(mysqli_num_rows($select_feedback) > 0){
+      $message[] = 'Message sent already!';
+   }else{
+      mysqli_query($conn, "UPDATE `message` SET feedback = '$feed' WHERE user_id = '$id'")or die('query failed');
+      $message[] = 'Message sent successfully!';
+   }
+
+}
+
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Admin Messages</title>
+   
+   
+   
+	<link rel="icon" href="images/name.png" type="image/icon type">
+	
+   <!-- font awesome cdn link  -->
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+   <!-- custom admin css file link  -->
+   <link rel="stylesheet" href="css/admin_style.css">
+
+</head>
+<body>
+   
+<?php include 'admin_header.php'; ?>
+
+<!--<section class="messages">
+
+
+
+<form action="" method="post">
+
+
+   <h1 class="title"> messages </h1>
+
+   <div class="box-container">
+   <?php
+      $select_feedback= mysqli_query($conn, "SELECT * FROM `message`") or die('query failed');
+      if(mysqli_num_rows($select_feedback) > 0){
+         while($fetch_message = mysqli_fetch_assoc($select_feedback)){
+      
+   ?>
+   <div class="box">
+      <p> User id : <span><?php echo $fetch_message['user_id']; ?></span> </p>
+      <p> Name : <span><?php echo $fetch_message['name']; ?></span> </p>
+      <p> Phone Number : <span><?php echo $fetch_message['number']; ?></span> </p>
+      <p> Email : <span><?php echo $fetch_message['email']; ?></span> </p>
+      <p> Message : <span><?php echo $fetch_message['message']; ?></span> </p>
+	<p> Feedback : <span><?php echo $fetch_message['feedback']; ?></span> </p>
+
+
+
+
+      <textarea name="feedback" class="box" placeholder="Enter your feedback" id="" cols="30" rows="10" style="width: 303px;height: 210px;resize: none;"></textarea>
+
+      <input type="submit" value="send message" name="send" class="btn">
+<br></br>
+      <a href="admin_contacts.php?delete=<?php echo $fetch_message['id']; ?>" onclick="return confirm('delete this message?');" class="delete-btn">delete message</a>
+   </div>
+   <?php
+      };
+   }else{
+      echo '<p class="empty">You have no messages!</p>';
+   }
+   ?>
+   </div>
+   </form>
+
+</section>-->
+
+<section>
+   <h1 class="title">Message</h1>
+
+   <?php
+               $select_feedback= mysqli_query($conn, "SELECT * FROM `message`") or die('query failed');
+      if(mysqli_num_rows($select_feedback) > 0){
+   ?>
+   <form action="" method="post">
+<table class="table">
+ <tr class="tr">
+ <th class="th">User ID</th>
+ <th class="th">Name</th>
+ <th class="th">Phone Number</th>
+ <th class="th">Email</th>
+ <th class="th">Message</th>
+ <th class="th">Feedback</th>
+ <th class="th">Send Feedback</th>
+</tr>
+      <?php
+            
+            while($fetch_message = mysqli_fetch_assoc($select_feedback)){
+      ?>
+
+  <tr class="tr">
+ <td class="td"> <span><?php echo $fetch_message['user_id']; ?></span> </td>
+ <td class="td"> <span><?php echo $fetch_message['name']; ?></span> </td>
+ <td class="td"> <span><?php echo $fetch_message['number']; ?></span> </td>
+ <td class="td"> <span><?php echo $fetch_message['email']; ?></span> </td>
+ <td class="td"> <span><?php echo $fetch_message['message']; ?></span> </td>
+ <td class="td"> <span><?php echo $fetch_message['feedback']; ?></span></td>
+ <td class="td"><textarea name="feedback" class="box" placeholder="Enter your feedback" id="" cols="30" rows="10" style="width: 303px;height: 210px;resize: none;"></textarea>
+<br></br>
+      <input type="submit" value="send message" name="send" class="btn">
+	  <br></br>
+      <a href="admin_contacts.php?delete=<?php echo $fetch_message['id']; ?>" onclick="return confirm('delete this message?');" class="delete-btn">delete message</a>
+
+</td>
+</tr>
+         <?php
+      };
+   }else{
+      echo '<p class="empty">You have no messages!</p>';
+   }
+   ?>
+</table>
+</section>
+
+
+
+
+
+
+
+
+
+
+<!-- custom admin js file link  -->
+<script src="js/admin_script.js"></script>
+
+</body>
+</html>
